@@ -50,16 +50,14 @@
 		<div class="x_panel">
 			<div class="x_content">
 				 <form method="post" action="index.php" enctype="multipart/form-data" class="form-inline">
-				       <label class="mr-sm-2 mb-0" for="first_name">First Name</label>
-		<!-- 		       <input type="text" name="name" id="name"/></br></br> -->
+				       <label class="mr-sm-2 mb-0" for="first_name">First Name</label>		
 				       <input type="text" class="form-control mr-sm-2 mb-2 mb-sm-0" id="first_name" name="first_name">
 				       <label class="mr-sm-2 mb-0" for="last_name">Last Name</label>
 				       <input type="text" class="form-control mr-sm-2 mb-2 mb-sm-0" id="last_name" name="last_name">
 				       <label class="mr-sm-2 mb-0" for="instagram">Instagram</label> 
 				      <input type="text" class="form-control mr-sm-2 mb-2 mb-sm-0" id="instagram" name="instagram">
 				       <input type="submit" class="btn btn-primary mt-2 mt-sm-0" name="submit" value="Submit" />
-				       <input type="submit" class="btn btn-danger mt-2 mt-sm-0" style="margin-left: 5px;"name="load_data" value="Load Data" />
-
+				       <input type="submit" class="btn btn-danger mt-2 mt-sm-0" style="margin-left: 5px;" name="load_data" value="Load Data" />
 				 </form>
 				 <?php
 				    $host = "adgdicodingappserver.database.windows.net";
@@ -76,6 +74,7 @@
 				        // $conn = new PDO("sqlsrv:server = $host; Database = $db", $user, $pass);
 				        // $conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 				        $conn = sqlsrv_connect($host, $connectionOptions);
+
 				    } catch(Exception $e) {
 				        echo "Failed: " . $e;
 				    }
@@ -89,11 +88,8 @@
 				            // Insert data
 				            $sql_insert = "INSERT INTO Registration (first_name, last_name, instagram) 
 				                        VALUES (?,?,?)";
-				            $stmt = $conn->prepare($sql_insert);
-				            $stmt->bindValue(1, $first_name);
-				            $stmt->bindValue(2, $last_name);
-				            $stmt->bindValue(3, $instagram);
-				            $stmt->execute();
+				            $params = array($first_name, $last_name, $instagram);
+				            $result = sqlsrv_query( $conn, $sql_insert, $params);				            
 				        } catch(Exception $e) {
 				            echo "Failed: " . $e;
 				        }
@@ -101,24 +97,24 @@
 				        echo "<h3>Your're registered!</h3>";
 				    } else if (isset($_POST['load_data'])) {
 				        try {
-				            $sql_select = "SELECT * FROM Registration";
-				            $stmt = $conn->query($sql_select);
-				            $registrants = $stmt->fetchAll(); 
-				            if(count($registrants) > 0) {
+				            $sql_select = "SELECT * FROM Registration";				            		          
+				            $getResults = sqlsrv_query($conn, $sql_select);	
+				            
+				            if($getResults != FALSE){
 				                echo "<h2>People who are registered:</h2>";
 				                echo "<table class='table table-sm'>";
 				                echo "<tr><th>First Name</th>";
 				                echo "<th>Last Name</th>";
 				                echo "<th>IG</th>";
-				                foreach($registrants as $registrant) {
-				                    echo "<tr><td>".$registrant['first_name']."</td>";
-				                    echo "<td>".$registrant['last_name']."</td>";
-				                    echo "<td>".$registrant['instagram']."</td>";				                    
-				                }
-				                echo "</table>";
+				            	while( $row = sqlsrv_fetch_array( $getResults, SQLSRV_FETCH_ASSOC )) {
+								    echo "<tr><td>".$row['first_name']."</td>";
+				                    echo "<td>".$row['last_name']."</td>";
+				                    echo "<td>".$row['instagram']."</td>";			
+								}	
+								echo "</table>";		            
 				            } else {
-				                echo "<h3>No one is currently registered.</h3>";
-				            }
+				            	 echo "<h3>No one is currently registered.</h3>";
+				            }				            				          				              				               				
 				        } catch(Exception $e) {
 				            echo "Failed: " . $e;
 				        }
