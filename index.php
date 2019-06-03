@@ -63,13 +63,19 @@
 				 </form>
 				 <?php
 				    $host = "adgdicodingappserver.database.windows.net";
-				    $user = "andryanduta";
-				    $pass = "AzureADG_";
-				    $db = "dicodingdb";
+				    // $user = "andryanduta";
+				    // $pass = "AzureADG_";
+				    // $db = "dicodingdb";
+				    $connectionOptions = array(
+				        "Database" => "dicodingdb", // update me
+				        "Uid" => "andryanduta", // update me
+				        "PWD" => "AzureADG_" // update me
+				    );
 
 				    try {
-				        $conn = new PDO("sqlsrv:server = $host; Database = $db", $user, $pass);
-				        $conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+				        // $conn = new PDO("sqlsrv:server = $host; Database = $db", $user, $pass);
+				        // $conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+				        $conn = sqlsrv_connect($host, $connectionOptions);
 				    } catch(Exception $e) {
 				        echo "Failed: " . $e;
 				    }
