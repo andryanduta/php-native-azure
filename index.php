@@ -68,9 +68,9 @@
 				    $db = "dicodingdb";
 
 				    try {
-				        $conn = new PDO("dblib:host = $host; dbname = $db", $user, $pass);
+				        $conn = new PDO("sqlsrv:server = $host; Database = $db", $user, $pass);
 				        $conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-				    } catch(PDOException  $e) {
+				    } catch(Exception $e) {
 				        echo "Failed: " . $e;
 				    }
 
